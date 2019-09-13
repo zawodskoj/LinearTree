@@ -413,7 +413,12 @@ namespace LinearTree
         }
     }
 
-    public class LinearTree<T> : IReadOnlyList<T>, ILinearTreeNode<T>
+    public interface IDispatchingCollectionChanges<T>
+    {
+        event EventHandler<CollectionChange> CollectionChanged;
+    }
+
+    public class LinearTree<T> : IReadOnlyList<T>, ILinearTreeNode<T>, IDispatchingCollectionChanges<T>
     {
         private readonly LinearTreeNode<T> _root;
         

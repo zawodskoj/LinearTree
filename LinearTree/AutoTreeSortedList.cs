@@ -26,7 +26,10 @@ namespace LinearTree
         }
     }
     
-    public class AutoTreeSortedList<T, TId, TSortKey> : IReadOnlyList<LinearTreeNode<T>> where T : class where TId : struct
+    public class AutoTreeSortedList<T, TId, TSortKey> : 
+        IReadOnlyList<LinearTreeNode<T>>, 
+        IDispatchingCollectionChanges<LinearTreeNode<T>>
+        where T : class where TId : struct
     {
         private readonly LinearTree<T> _tree;
         private readonly List<LinearTreeNode<T>> _nodes;
@@ -94,6 +97,8 @@ namespace LinearTree
                             _nodes[i] = _nodes[i];
                         break;
                 }
+                
+                CollectionChanged?.Invoke(this, change);
             };
         }
 
@@ -217,5 +222,6 @@ namespace LinearTree
         public int Count => _nodes.Count;
 
         public LinearTreeNode<T> this[int index] => _nodes[index];
+        public event EventHandler<CollectionChange> CollectionChanged;
     }
 }

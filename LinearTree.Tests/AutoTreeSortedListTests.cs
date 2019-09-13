@@ -89,7 +89,7 @@ namespace LinearTree.Tests
         [Fact]
         public void TestTreeMatchesListRepresentation()
         {
-            Assert.Equal(GenerateTestTree().Select(x => x.Value.Id), Enumerable.Range(0, 17));
+            Assert.Equal(Enumerable.Range(0, 17), GenerateTestTree().Select(x => x.Value.Id));
         }
 
         [Fact]

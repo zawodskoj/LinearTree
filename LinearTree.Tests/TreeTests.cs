@@ -1,14 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Schema;
 using Xunit;
 
 namespace LinearTree.Tests
 {
     public class TreeTests
     {
-        private List<T> CreateAutoDispatchedList<T>(LinearTree<T> tree)
+        public static List<T> CreateAutoDispatchedList<T, TTree>(TTree tree) where TTree : IReadOnlyList<T>, IDispatchingCollectionChanges<T>
         {
             var list = new List<T>(tree);
 
@@ -58,11 +56,15 @@ namespace LinearTree.Tests
             return list;
         }
 
+        private List<T> CreateAutoDispatchedList<T>(LinearTree<T> tree) =>
+            CreateAutoDispatchedList<T, LinearTree<T>>(tree);
+
         private LinearTree<int> GenerateTestTree()
         {
             var tree = new LinearTree<int>();
             
             // @formatter:off
+            // ReSharper disable UnusedVariable
             var n00 = tree.InsertNode(00, 0);
                 var n01 = n00.InsertNode(01, 0);
             var n02 = tree.InsertNode(02, 1);
@@ -80,6 +82,7 @@ namespace LinearTree.Tests
             var n14 = tree.InsertNode(14, 5);
                 var n15 = n14.InsertNode(15, 0);
                 var n16 = n14.InsertNode(16, 1);
+            // ReSharper restore UnusedVariable
             // @formatter:on
 
             return tree;
@@ -88,7 +91,7 @@ namespace LinearTree.Tests
         [Fact]
         public void TestTreeMatchesListRepresentation()
         {
-            Assert.Equal(GenerateTestTree(), Enumerable.Range(0, 17));
+            Assert.Equal(Enumerable.Range(0, 17), GenerateTestTree());
         }
 
         [Fact]
