@@ -134,7 +134,7 @@ namespace LinearTree
             var aboveLessThan = actualPosition == 0 ||
                                 _sortKeyComparer(sortKey, _selectSortKey(parent.Children[actualPosition - 1].Value)) >= 0;
             
-            var belowGreaterThan = actualPosition >= parent.Children.Count ||
+            var belowGreaterThan = actualPosition == parent.Children.Count - 1 ||
                                    _sortKeyComparer(sortKey, _selectSortKey(parent.Children[actualPosition + 1].Value)) <= 0;
 
             if (belowGreaterThan && aboveLessThan)

@@ -92,23 +92,32 @@ namespace LinearTree.Tests
             Assert.Equal(Enumerable.Range(0, 17), GenerateTestTree().Select(x => x.Value.Id));
         }
 
+        public static List<LinearTreeNode<Item>> CreateAutoDispatchedList(AutoTreeSortedList<Item, int, int> tree)
+        {
+            return TreeTests.CreateAutoDispatchedList<LinearTreeNode<Item>,
+                AutoTreeSortedList<Item, int, int>>(tree);
+        }
+
         [Fact]
         public void InsertInRoot()
         {
             var testTree = GenerateTestTree();
             var manualItems = GenerateTestItems();
+            var autoItems = CreateAutoDispatchedList(testTree);
 
             var item1 = new Item(-1, null, 0);
             testTree.Upsert(item1);
             manualItems.Insert(0, item1);
 
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
             
             var item2 = new Item(-2, null, 100);
             testTree.Upsert(item2);
             manualItems.Add(item2);
             
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
         }
 
         [Fact]
@@ -116,25 +125,29 @@ namespace LinearTree.Tests
         {
             var testTree = GenerateTestTree();
             var manualItems = GenerateTestItems();
+            var autoItems = CreateAutoDispatchedList(testTree);
 
             var item1 = new Item(-1, 09, -1);
             testTree.Upsert(item1);
             manualItems.Insert(10, item1);
 
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
             
             var item2 = new Item(-2, 09, 1);
             testTree.Upsert(item2);
             manualItems.Insert(13, item2);
             
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
         }
-
+        
         [Fact]
         public void UpdateParent()
         {
             var testTree = GenerateTestTree();
             var manualItems = GenerateTestItems();
+            var autoItems = CreateAutoDispatchedList(testTree);
 
             var item = new Item(2, null, 0);
             testTree.Delete(item);
@@ -145,6 +158,7 @@ namespace LinearTree.Tests
             manualItems.Insert(5, new Item(6, 2, 2));
 
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
 
             testTree.Upsert(item);
             manualItems.RemoveRange(4, 2);
@@ -153,6 +167,7 @@ namespace LinearTree.Tests
             manualItems.Insert(4, new Item(6, 2, 2));
             
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
         }
 
         [Fact]
@@ -160,6 +175,7 @@ namespace LinearTree.Tests
         {
             var testTree = GenerateTestTree();
             var manualItems = GenerateTestItems();
+            var autoItems = CreateAutoDispatchedList(testTree);
 
             var item1 = new Item(2, null, -1);
             testTree.Upsert(item1);
@@ -169,6 +185,7 @@ namespace LinearTree.Tests
             manualItems.Insert(6, new Item(1, 0, 0));
 
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
             
             var item2 = new Item(2, null, 100);
             testTree.Upsert(item2);
@@ -180,6 +197,7 @@ namespace LinearTree.Tests
             manualItems.Add(new Item(6, 2, 2));
 
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
         }
 
         [Fact]
@@ -187,44 +205,53 @@ namespace LinearTree.Tests
         {
             var testTree = GenerateTestTree();
             var manualItems = GenerateTestItems();
+            var autoItems = CreateAutoDispatchedList(testTree);
 
             var item1 = new Item(-1, null, 1);
             testTree.Upsert(item1);
             manualItems.Insert(2, item1);
 
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
             
             var item2 = new Item(2, null, 1);
             testTree.Upsert(item2);
 
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
             
             var item3 = new Item(-2, null, 1);
             testTree.Upsert(item3);
             manualItems.Insert(2, item3);
 
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
             testTree.Upsert(item2);
 
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
             
             var item4 = new Item(2, null, 2);
             testTree.Upsert(item4);
             manualItems[4] = item4;
             
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
             
             var item5 = new Item(-1, null, 2);
             testTree.Upsert(item5);
             manualItems[3] = item5;
             
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
             
             var item6 = new Item(2, null, 2);
             testTree.Upsert(item6);
             manualItems[4] = item6;
             
             Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
         }
     }
 }
