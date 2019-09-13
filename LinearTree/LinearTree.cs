@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LinearTree
 {
@@ -66,10 +67,14 @@ namespace LinearTree
         void MoveNode(int from, int to);
         void ReparentNode(LinearTreeNode<T> node, int index);
         void ClearChildren();
+        LinearTreeNode<T> NodeAt(int index);
+        IEnumerable<LinearTreeNode<T>> IterateNodes();
     }
     
+    [DebuggerDisplay("Value = ({Value}), Level = {Level}, Children = {Children.Count}")]
     public class LinearTreeNode<T> : IReadOnlyList<T>, ILinearTreeNode<T>
     {
+        
         private readonly List<LinearTreeNode<T>> _children = new List<LinearTreeNode<T>>();
         private Action<LinearTreeNode<T>, CollectionChange> _dispatchCollectionChange;
         private readonly int _offset;
@@ -92,6 +97,8 @@ namespace LinearTree
             Value = value;
         }
 
+        public LinearTreeNode<T> Parent => _parent;
+
         public T Value
         {
             get => _value;
@@ -106,6 +113,8 @@ namespace LinearTree
 
         public IReadOnlyList<LinearTreeNode<T>> Children => _children;
 
+        public int IndexOfChild(LinearTreeNode<T> node) => _children.IndexOf(node);
+
         private IEnumerable<T> Iterate()
         {
             if (_parent != null)
@@ -117,6 +126,18 @@ namespace LinearTree
                     yield return iterated;
             }   
         }
+        
+        public IEnumerable<LinearTreeNode<T>> IterateNodes()
+        {
+            if (_parent != null)
+                yield return this;
+            
+            foreach (var child in _children)
+            {
+                foreach (var iterated in child.IterateNodes())
+                    yield return iterated;
+            }   
+        }
 
         public IEnumerator<T> GetEnumerator() => Iterate().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => Iterate().GetEnumerator();
@@ -124,34 +145,33 @@ namespace LinearTree
         public int Count => _descendantsCount + _offset;
         public int Level => _parent?.Level + 1 ?? 0;
 
-        public T this[int index]
+        public T this[int index] => NodeAt(index).Value;
+
+        public LinearTreeNode<T> NodeAt(int index)
         {
-            get
+            if (index < 0 || index >= _descendantsCount + _offset)
+                throw new IndexOutOfRangeException();
+
+            var cnt = 0;
+
+            if (_parent != null)
             {
-                if (index < 0 || index >= _descendantsCount + _offset)
-                    throw new IndexOutOfRangeException();
-                
-                var cnt = 0;
+                if (index == 0)
+                    return this;
 
-                if (_parent != null)
-                {
-                    if (index == 0)
-                        return Value;
-
-                    index--;
-                }
-                
-                foreach (var child in _children)
-                {   
-                    var count = child.Count;
-                    if (index < cnt + count)
-                        return child[index - cnt];
-
-                    cnt += count;
-                }
-                
-                throw new IndexOutOfRangeException("Should never happen");
+                index--;
             }
+
+            foreach (var child in _children)
+            {
+                var count = child.Count;
+                if (index < cnt + count)
+                    return child.NodeAt(index - cnt);
+
+                cnt += count;
+            }
+
+            throw new IndexOutOfRangeException("Should never happen");
         }
 
         public LinearTreeNode<T> InsertNode(T value, int index)
@@ -228,6 +248,7 @@ namespace LinearTree
         {
             if (node == this) throw new InvalidOperationException("Self-reparenting is not allowed");
             if (node._parent == this) throw new InvalidOperationException("Reparenting to same parent is not allowed");
+            if (node._parent == null) throw new InvalidOperationException("Reparenting root node is not allowed");
             EnsureNotParentToChildReparenting(node);
 
             var mostCommon = node._parent;
@@ -295,6 +316,17 @@ namespace LinearTree
             mostCommon._dispatchCollectionChange(mostCommon, CollectionChange.Move(offsetBefore, offsetAfter, insChange.Count));
         }
 
+        public void ReparentForeignNode(LinearTreeNode<T> node, int index)
+        {
+            if (node._parent == null) throw new InvalidOperationException("Reparenting root node is not allowed");
+            if (index < 0 || index > _children.Count) throw new IndexOutOfRangeException();
+            
+            var oldIndex = node._parent._children.IndexOf(node);
+
+            node._parent.RemoveNode(oldIndex);
+            InsertNode(node, index, true);
+        }
+ 
         private void EnsureNotParentToChildReparenting(LinearTreeNode<T> node)
         {
             var parent = _parent;
@@ -409,5 +441,8 @@ namespace LinearTree
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable) _root).GetEnumerator();
         public int Count => _root.Count;
         public T this[int index] => _root[index];
+        public LinearTreeNode<T> NodeAt(int index) => _root.NodeAt(index);
+
+        public IEnumerable<LinearTreeNode<T>> IterateNodes() => _root.IterateNodes();
     }
 }
