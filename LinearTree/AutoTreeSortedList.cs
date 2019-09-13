@@ -5,40 +5,44 @@ using System.Linq;
 
 namespace LinearTree
 {
+    public delegate TId SelectId<T, TId>(T item) where T : class where TId : struct;
+    public delegate TId? SelectParentId<T, TId>(T item) where T : class where TId : struct;
+    public delegate bool IdComparer<TId>(TId id1, TId id2) where TId: struct;
+
+    public delegate TSortKey SelectSortKey<T, TSortKey>(T item) where T : class;
+    public delegate int SortKeyComparer<TSortKey>(TSortKey lhs, TSortKey rhs);
+    
     public static class AutoTreeSortedList<T> where T : class
     {
         public static AutoTreeSortedList<T, TId, TSortKey> Create<TId, TSortKey>(
-            AutoTreeSortedList<T, TId, TSortKey>.SelectId selectId,
-            AutoTreeSortedList<T, TId, TSortKey>.SelectParentId selectParentId,
-            AutoTreeSortedList<T, TId, TSortKey>.IdComparer idComparer,
-            AutoTreeSortedList<T, TId, TSortKey>.SelectSortKey selectSortKey,
-            AutoTreeSortedList<T, TId, TSortKey>.SortKeyComparer sortKeyComparer) where TId : struct
+            SelectId<T, TId> selectId,
+            SelectParentId<T, TId> selectParentId,
+            IdComparer<TId> idComparer,
+            SelectSortKey<T, TSortKey> selectSortKey,
+            SortKeyComparer<TSortKey> sortKeyComparer) where TId : struct
         {
             return new AutoTreeSortedList<T, TId, TSortKey>(
-                selectId, selectParentId, selectSortKey, idComparer, sortKeyComparer);
+                selectId, selectParentId, idComparer, selectSortKey, sortKeyComparer);
         }
     }
     
     public class AutoTreeSortedList<T, TId, TSortKey> : IReadOnlyList<LinearTreeNode<T>> where T : class where TId : struct
     {
-        public delegate TId SelectId(T item);
-        public delegate TId? SelectParentId(T item);
-        public delegate bool IdComparer(TId id1, TId id2);
-
-        public delegate TSortKey SelectSortKey(T item);
-        public delegate int SortKeyComparer(TSortKey lhs, TSortKey rhs);
-
         private readonly LinearTree<T> _tree;
         private readonly List<LinearTreeNode<T>> _nodes;
         
-        private readonly SelectId _selectId;
-        private readonly SelectParentId _selectParentId;
-        private readonly SelectSortKey _selectSortKey;
-        private readonly IdComparer _idComparer;
-        private readonly SortKeyComparer _sortKeyComparer;
+        private readonly SelectId<T, TId> _selectId;
+        private readonly SelectParentId<T, TId> _selectParentId;
+        private readonly IdComparer<TId> _idComparer;
+        private readonly SelectSortKey<T, TSortKey> _selectSortKey;
+        private readonly SortKeyComparer<TSortKey> _sortKeyComparer;
 
-        public AutoTreeSortedList(SelectId selectId, SelectParentId selectParentId, SelectSortKey selectSortKey,
-            IdComparer idComparer, SortKeyComparer sortKeyComparer)
+        public AutoTreeSortedList(
+            SelectId<T, TId> selectId,
+            SelectParentId<T, TId> selectParentId,
+            IdComparer<TId> idComparer,
+            SelectSortKey<T, TSortKey> selectSortKey,
+            SortKeyComparer<TSortKey> sortKeyComparer)
         {
             _selectId = selectId;
             _selectParentId = selectParentId;
