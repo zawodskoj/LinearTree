@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <AssemblyName>Zw.LinearTree</AssemblyName>
+        <RootNamespace>Zw.LinearTree</RootNamespace>
     </PropertyGroup>
 
 </Project>

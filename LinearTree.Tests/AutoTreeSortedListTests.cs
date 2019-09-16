@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Xml.Schema;
 using Xunit;
+using Zw.LinearTree;
 
 namespace LinearTree.Tests
 {

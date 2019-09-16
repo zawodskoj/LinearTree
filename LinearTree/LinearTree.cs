@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace LinearTree
+namespace Zw.LinearTree
 {
     public enum CollectionChangeType
     {

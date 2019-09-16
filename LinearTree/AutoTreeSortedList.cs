@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace LinearTree
+namespace Zw.LinearTree
 {
     public delegate TId SelectId<T, TId>(T item) where T : class where TId : struct;
     public delegate TId? SelectParentId<T, TId>(T item) where T : class where TId : struct;
