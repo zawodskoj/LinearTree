@@ -201,6 +201,130 @@ namespace LinearTree.Tests
         }
 
         [Fact]
+        public void OrderedInsertAfterClear()
+        {
+            var testTree = GenerateTestTree();
+            var manualItems = GenerateTestItems();
+            var autoItems = CreateAutoDispatchedList(testTree);
+
+            testTree.Clear();
+            manualItems.Clear();
+
+            var item1 = new Item(1, 0, 1);
+            testTree.Upsert(item1);
+            manualItems.Add(item1);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item2 = new Item(2, 0, 2);
+            testTree.Upsert(item2);
+            manualItems.Add(item2);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item3 = new Item(3, 0, 3);
+            testTree.Upsert(item3);
+            manualItems.Add(item3);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item4 = new Item(4, 0, 4);
+            testTree.Upsert(item4);
+            manualItems.Add(item4);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+        }
+
+        [Fact]
+        public void RevOrderedInsertAfterClear()
+        {
+            var testTree = GenerateTestTree();
+            var manualItems = GenerateTestItems();
+            var autoItems = CreateAutoDispatchedList(testTree);
+
+            testTree.Clear();
+            manualItems.Clear();
+
+            var item1 = new Item(1, 0, 4);
+            testTree.Upsert(item1);
+            manualItems.Insert(0, item1);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item2 = new Item(2, 0, 3);
+            testTree.Upsert(item2);
+            manualItems.Insert(0, item2);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item3 = new Item(3, 0, 2);
+            testTree.Upsert(item3);
+            manualItems.Insert(0, item3);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item4 = new Item(4, 0, 1);
+            testTree.Upsert(item4);
+            manualItems.Insert(0, item4);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+        }
+
+        [Fact]
+        public void UnorderedInsertAfterClear()
+        {
+            var testTree = GenerateTestTree();
+            var manualItems = GenerateTestItems();
+            var autoItems = CreateAutoDispatchedList(testTree);
+
+            testTree.Clear();
+            manualItems.Clear();
+
+            var item1 = new Item(1, 0, 4);
+            testTree.Upsert(item1);
+            manualItems.Add(item1);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item2 = new Item(2, 0, 1);
+            testTree.Upsert(item2);
+            manualItems.Insert(0, item2);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item3 = new Item(3, 0, 3);
+            testTree.Upsert(item3);
+            manualItems.Insert(1, item3);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item4 = new Item(4, 0, 2);
+            testTree.Upsert(item4);
+            manualItems.Insert(1, item4);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+            
+            var item5 = new Item(5, 0, 5);
+            testTree.Upsert(item5);
+            manualItems.Add(item5);
+
+            Assert.Equal(manualItems, testTree.Select(x => x.Value));
+            Assert.Equal(manualItems, autoItems.Select(x => x.Value));
+        }
+
+        [Fact]
         public void StableUpdate()
         {
             var testTree = GenerateTestTree();

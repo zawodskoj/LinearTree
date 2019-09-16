@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace LinearTree
@@ -131,27 +132,36 @@ namespace LinearTree
             var actualPosition = parent.IndexOfChild(node);
             
             // checking that existing position is valid (keep sorting stable)
-            var aboveLessThan = actualPosition == 0 ||
+            var greaterThanAbove = actualPosition == 0 ||
                                 _sortKeyComparer(sortKey, _selectSortKey(parent.Children[actualPosition - 1].Value)) >= 0;
             
-            var belowGreaterThan = actualPosition == parent.Children.Count - 1 ||
+            var lessThanBelow = actualPosition == parent.Children.Count - 1 ||
                                    _sortKeyComparer(sortKey, _selectSortKey(parent.Children[actualPosition + 1].Value)) <= 0;
 
-            if (belowGreaterThan && aboveLessThan)
+            if (lessThanBelow && greaterThanAbove)
             {
                 // position is valid, no need to move
+                Debug.WriteLine("Node at {0}, no need to move (sk: {1})", actualPosition, sortKey);
+                
                 return;
             }
-
+            
             // trying to find any valid position
             var requiredPosition = FindRequiredPosition(parent, node.Value);
-            if (actualPosition < requiredPosition) requiredPosition--;
+            Debug.Assert(requiredPosition != actualPosition);
+
+            if (requiredPosition > actualPosition)
+                requiredPosition--;
             
+            Debug.WriteLine("Node at {0}, moving to {1}", actualPosition, requiredPosition);
+
             parent.MoveNode(actualPosition, requiredPosition);
         }
 
         public void Upsert(T item)
         {
+            Debug.WriteLine("Upserting item: {0}", item);
+            
             if (item == null) throw new ArgumentNullException(nameof(item));
             var id = _selectId(item);
 
@@ -159,11 +169,13 @@ namespace LinearTree
             
             if (node != null)
             {
+                Debug.WriteLine("Node exists, updating and moving to required position");
+                
                 node.Value = item;
                 MoveToRequiredPosition(node);
                 return;
             }
-
+            
             var parentId = _selectParentId(item);
             ILinearTreeNode<T> parentNode = parentId != null
                 ? _nodes.FirstOrDefault(x => _idComparer(_selectId(x.Value), parentId.Value))
@@ -173,6 +185,8 @@ namespace LinearTree
             
             var requiredPosition = FindRequiredPosition(parentNode, item);
             node = parentNode.InsertNode(item, requiredPosition);
+            
+            Debug.WriteLine("Node does not exist, inserting at position {0}", requiredPosition);
 
             while (true)
             {
@@ -223,5 +237,13 @@ namespace LinearTree
 
         public LinearTreeNode<T> this[int index] => _nodes[index];
         public event EventHandler<CollectionChange> CollectionChanged;
+
+        public void Clear()
+        { 
+            _tree.ClearChildren();
+
+            if (_nodes.Count > 0)
+                throw new Exception("Node count > 0 after clear, should not happen");
+        }
     }
 }

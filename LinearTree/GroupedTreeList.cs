@@ -250,8 +250,10 @@ namespace LinearTree
             if (item == null) throw new ArgumentNullException(nameof(item));
             var id = _selectId(item);
 
-            if (_groupKeyMapping.Remove(id, out var existingGroup))
+            if (_groupKeyMapping.TryGetValue(id, out var existingGroup))
             {
+                _groupKeyMapping.Remove(id);
+                
                 var existingGroupList = _groups.Single(x => _groupKeyComparer(x.Key, existingGroup));
                 existingGroupList.List.Delete(item);
                 
@@ -322,5 +324,15 @@ namespace LinearTree
         }
 
         public event EventHandler<CollectionChange> CollectionChanged;
+
+        public void Clear()
+        {
+            foreach (var group in _groups)
+            {
+                group.List.Clear();
+            }
+
+            _groupKeyMapping.Clear();
+        }
     }
 } 

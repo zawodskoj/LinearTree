@@ -345,9 +345,10 @@ namespace LinearTree
             if (_children.Count is int count && count > 0)
             {
                 _children.Clear();
-                _dispatchCollectionChange(this, CollectionChange.Remove(_offset, count));
 
+                var oldDescendantsCount = _descendantsCount;
                 _descendantsCount = 0;
+                _dispatchCollectionChange(this, CollectionChange.Remove(_offset, oldDescendantsCount));
             }
         }
         
