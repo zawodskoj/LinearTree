@@ -341,8 +341,9 @@ namespace Zw.LinearTree
             {
                 group.List.Clear();
             }
-
+            
             _groupKeyMapping.Clear();
+            if (_separator != GroupedTreeSeparator.ALWAYS) _count = 0;
         }
     }
 } 

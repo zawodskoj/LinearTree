@@ -303,6 +303,42 @@ namespace LinearTree.Tests
             Assert.Equal(manualItems, autoItems.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
         }
         
+
+        [Fact]
+        public void InsertItemsWithAutoSepsAfterClear()
+        {
+            var tree = GenerateTestTree(GroupedTreeSeparator.NON_EMPTY);
+            var manualItems = GenerateTestItemsRegrouped().Select(x => new { i = x, s = false, g = x.GroupKey }).ToList();
+            
+            // separators
+            manualItems.Insert(0, new {i = (Item) null, s = true, g = 0});
+            manualItems.Insert(10, new {i = (Item) null, s = true, g = 1});
+            manualItems.Insert(13, new {i = (Item) null, s = true, g = 2});
+            manualItems.Insert(16, new {i = (Item) null, s = true, g = 4});
+            
+            var autoItems = CreateAutoDispatchedList(tree);
+            
+            Assert.Equal(manualItems, tree.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, autoItems.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
+
+            tree.Clear();
+            manualItems.Clear();
+            
+            Assert.Equal(manualItems, tree.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, autoItems.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
+
+            var item1 = new Item(-1, null, -1, 0);
+            tree.Upsert(item1);
+            manualItems.Add(new { i = (Item) null, s = true, g = 0 });
+            manualItems.Add(new { i = item1, s = false, g = 0 });
+            
+            Assert.Equal(manualItems, tree.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, autoItems.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
+        }
+        
         [Fact]
         public void RemoveItemsWithoutSeps()
         {
