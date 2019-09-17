@@ -229,6 +229,10 @@ namespace Zw.LinearTree
                     var existingGroupList = _groups.Single(x => _groupKeyComparer(x.Key, existingGroup));
                     
                     existingGroupList.List.Delete(item);
+                    if (existingGroupList.List.Count == 0)
+                        _count--;
+                    if (groupList.List.Count == 0)
+                        _count++;
                     groupList.List.Upsert(item);
 
                     _groupKeyMapping[id] = group;
@@ -300,18 +304,24 @@ namespace Zw.LinearTree
                     if (count == 0)
                     {
                         if (_separator == GroupedTreeSeparator.ALWAYS)
-                            return GroupedTreeItem<T, TGroupKey>.Separator(list.Key);
-                        
+                        {
+                            if (index == cnt)
+                                return GroupedTreeItem<T, TGroupKey>.Separator(list.Key);
+                            
+                            cnt++;
+                        }
+
                         continue;
                     }
 
                     var hasSep = _separator != GroupedTreeSeparator.NONE;
                     var sepOfs = hasSep ? 1 : 0;
-                    if (index - cnt < count + sepOfs)
-                    {
-                        if (index == cnt && hasSep)
-                            return GroupedTreeItem<T, TGroupKey>.Separator(list.Key);
 
+                    if (index == cnt && hasSep)
+                        return GroupedTreeItem<T, TGroupKey>.Separator(list.Key);
+
+                    if (index - cnt - sepOfs < count)
+                    {
                         var node = list.List[index - cnt - sepOfs];
                         return new GroupedTreeItem<T, TGroupKey>(node.Value, node.Level, list.Key);
                     }

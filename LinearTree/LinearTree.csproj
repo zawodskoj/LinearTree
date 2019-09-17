@@ -6,7 +6,7 @@
         <RootNamespace>Zw.LinearTree</RootNamespace>
         
         <PackageId>Zw.LinearTree</PackageId>
-        <Version>1.0.0</Version>
+        <Version>1.0.1</Version>
         <Authors>Dmitrii Zawodskoj (@zawodskoj)</Authors>
         <PackageDescription>Contains some useful classes for use trees in UI, with sorting, 
             grouping and collection change notifications (insert, remove, move, replace)</PackageDescription>

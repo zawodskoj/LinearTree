@@ -6,6 +6,15 @@ using Zw.LinearTree;
 
 namespace LinearTree.Tests
 {
+    public static class GroupedTreeListTestsHelpers
+    {
+        public static IEnumerable<GroupedTreeItem<A, D>> Index<A, B, C, D>(this GroupedTreeList<A, B, C, D> tree) where B : struct where A : class
+        {
+            for (var i = 0; i < tree.Count; i++)
+                yield return tree[i];
+        }
+    }
+
     public class GroupedTreeListTests
     {
         [DebuggerDisplay("Id = {Id}, Parent = {ParentId}, SortKey = {SortKey}, GroupKey = {GroupKey}")]
@@ -194,6 +203,7 @@ namespace LinearTree.Tests
             manualItems.Insert(0, item1);
             
             Assert.Equal(manualItems, tree.Select(x => x.Item));
+            Assert.Equal(manualItems, tree.Index().Select(x => x.Item));
             Assert.Equal(manualItems, autoItems.Select(x => x.Item));
             
             var item2 = new Item(-2, 9, 1, 2);
@@ -201,6 +211,7 @@ namespace LinearTree.Tests
             manualItems.Insert(14, item2);
             
             Assert.Equal(manualItems, tree.Select(x => x.Item));
+            Assert.Equal(manualItems, tree.Index().Select(x => x.Item));
             Assert.Equal(manualItems, autoItems.Select(x => x.Item));
             
             var item3 = new Item(-3, 9, 1, 3);
@@ -208,6 +219,7 @@ namespace LinearTree.Tests
             manualItems.Insert(15, item3);
             
             Assert.Equal(manualItems, tree.Select(x => x.Item));
+            Assert.Equal(manualItems, tree.Index().Select(x => x.Item));
             Assert.Equal(manualItems, autoItems.Select(x => x.Item));
         }
 
@@ -231,6 +243,7 @@ namespace LinearTree.Tests
             manualItems.Insert(1, new {i = item1, s = false, g = 0});
 
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
 
             var item2 = new Item(-2, 9, 1, 2);
@@ -238,6 +251,7 @@ namespace LinearTree.Tests
             manualItems.Insert(17, new {i = item2, s = false, g = 2});
 
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
 
             var item3 = new Item(-3, 9, 1, 3);
@@ -245,6 +259,7 @@ namespace LinearTree.Tests
             manualItems.Insert(19, new {i = item3, s = false, g = 3});
 
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
         }
 
@@ -267,6 +282,7 @@ namespace LinearTree.Tests
             manualItems.Insert(1, new { i = item1, s = false, g = 0 });
             
             Assert.Equal(manualItems, tree.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
             
             var item2 = new Item(-2, 9, 1, 2);
@@ -274,6 +290,7 @@ namespace LinearTree.Tests
             manualItems.Insert(17, new { i = item2, s = false, g = 2 });
             
             Assert.Equal(manualItems, tree.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
             
             var item3 = new Item(-3, 9, 1, 3);
@@ -282,6 +299,7 @@ namespace LinearTree.Tests
             manualItems.Insert(19, new { i = item3, s = false, g = 3 });
             
             Assert.Equal(manualItems, tree.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new { i = x.Item, s = x.IsSeparator, g = x.GroupKey }));
         }
         
@@ -296,12 +314,14 @@ namespace LinearTree.Tests
             manualItems.RemoveAt(0);
             
             Assert.Equal(manualItems, tree.Select(x => x.Item));
+            Assert.Equal(manualItems, tree.Index().Select(x => x.Item));
             Assert.Equal(manualItems, autoItems.Select(x => x.Item));
             
             tree.Delete(new Item(14, null, 0, 0));
             manualItems.RemoveAt(7);
             
             Assert.Equal(manualItems, tree.Select(x => x.Item));
+            Assert.Equal(manualItems, tree.Index().Select(x => x.Item));
             Assert.Equal(manualItems, autoItems.Select(x => x.Item));
             
             tree.Delete(new Item(11, null, 0, 0));
@@ -310,6 +330,7 @@ namespace LinearTree.Tests
             manualItems.RemoveAt(7);
             
             Assert.Equal(manualItems, tree.Select(x => x.Item));
+            Assert.Equal(manualItems, tree.Index().Select(x => x.Item));
             Assert.Equal(manualItems, autoItems.Select(x => x.Item));
         }
 
@@ -332,12 +353,14 @@ namespace LinearTree.Tests
             manualItems.RemoveAt(1);
 
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
 
             tree.Delete(new Item(14, null, 0, 0));
             manualItems.RemoveAt(8);
 
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
 
             tree.Delete(new Item(11, null, 0, 0));
@@ -346,6 +369,7 @@ namespace LinearTree.Tests
             manualItems.RemoveAt(9);
             
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
         }
 
@@ -367,12 +391,14 @@ namespace LinearTree.Tests
             manualItems.RemoveAt(1);
 
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
 
             tree.Delete(new Item(14, null, 0, 0));
             manualItems.RemoveAt(8);
 
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
 
             tree.Delete(new Item(11, null, 0, 0));
@@ -382,6 +408,7 @@ namespace LinearTree.Tests
             manualItems.RemoveAt(8);
             
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
         }
 
@@ -405,6 +432,7 @@ namespace LinearTree.Tests
             manualItems[12] = new {i = item1, s = false, g = 1};
 
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
 
             var item2 = new Item(11, null, 0, 3);
@@ -414,6 +442,7 @@ namespace LinearTree.Tests
             manualItems.Insert(16, new { i = item2, s = false, g = 3 });
 
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
 
             var item3 = new Item(03, 11, 0, 3);
@@ -423,6 +452,7 @@ namespace LinearTree.Tests
             manualItems.RemoveAt(10);
             
             Assert.Equal(manualItems, tree.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
+            Assert.Equal(manualItems, tree.Index().Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
             Assert.Equal(manualItems, autoItems.Select(x => new {i = x.Item, s = x.IsSeparator, g = x.GroupKey}));
         }
     }
