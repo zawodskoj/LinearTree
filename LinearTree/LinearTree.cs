@@ -271,9 +271,11 @@ namespace Zw.LinearTree
             throw new InvalidOperationException("No common parents between current and reparenting node");
             
             found:
-
+            
             var oldParent = node._parent;
             var oldChildIx = oldParent._children.IndexOf(node);
+
+            var oldLevel = node.Level;
 
             var offsetBefore = node.CalculateOffsetRelativeToParent(mostCommon);
             
@@ -314,6 +316,12 @@ namespace Zw.LinearTree
 
             var offsetAfter = node.CalculateOffsetRelativeToParent(mostCommon);
             mostCommon._dispatchCollectionChange(mostCommon, CollectionChange.Move(offsetBefore, offsetAfter, insChange.Count));
+            
+            if (node.Level != oldLevel)
+            {
+                // optimize?
+                mostCommon._dispatchCollectionChange(mostCommon, CollectionChange.Replace(offsetAfter, insChange.Count));
+            }
         }
 
         public void ReparentForeignNode(LinearTreeNode<T> node, int index)
