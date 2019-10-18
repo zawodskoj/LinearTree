@@ -208,6 +208,27 @@ namespace Zw.LinearTree
             }
         }
 
+        public void Update(T item)
+        {
+            Debug.WriteLine("Upserting item: {0}", item);
+            
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            var id = _selectId(item);
+
+            var node = _nodes.FirstOrDefault(x => _idComparer(_selectId(x.Value), id));
+            
+            if (node != null)
+            {
+                Debug.WriteLine("Node exists, updating and moving to required position");
+                
+                node.Value = item;
+                MoveToRequiredPosition(node);
+                return;
+            }
+            
+            Debug.WriteLine("Node does not exist, skipping");
+        }
+
         public void Delete(T item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));

@@ -249,6 +249,36 @@ namespace Zw.LinearTree
             }
         }
 
+        public void Update(T item)
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            var id = _selectId(item);
+            
+            var group = _selectGroupKey(item);
+            var groupList = _groups.Single(x => _groupKeyComparer(x.Key, group));
+            
+            if (_groupKeyMapping.TryGetValue(id, out var existingGroup))
+            {
+                if (_groupKeyComparer(existingGroup, group))
+                {
+                    groupList.List.Upsert(item);
+                }
+                else
+                {
+                    var existingGroupList = _groups.Single(x => _groupKeyComparer(x.Key, existingGroup));
+                    
+                    existingGroupList.List.Delete(item);
+                    if (existingGroupList.List.Count == 0)
+                        _count--;
+                    if (groupList.List.Count == 0)
+                        _count++;
+                    groupList.List.Upsert(item);
+
+                    _groupKeyMapping[id] = group;
+                }
+            }
+        }
+
         public void Delete(T item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
